@@ -374,7 +374,6 @@ if __name__=='__main__':
         num = args.num
         if num == 1:
             num = 20
-
         target_task(input, output, num)
 
     else:
