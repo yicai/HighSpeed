@@ -16,3 +16,5 @@ algo = partial(tpe.suggest, n_startup_jobs=10)
 best = fmin(q, space, algo=algo, max_evals=20)
 print(space_eval(space, best))
 print(best)
+
+# Second Test here

@@ -371,9 +371,4 @@ if __name__=='__main__':
     else:
         raise Exception('Input Error!!', TYPE)
 
-
-
-
-
-
-
+# Do some test only
