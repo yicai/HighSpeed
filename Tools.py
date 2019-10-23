@@ -8,6 +8,7 @@ import shutil
 import stat
 
 from ClsThresholdProc import Proc
+from detection_target_divide import target_task
 
 
 class Tools(object):
@@ -367,6 +368,14 @@ if __name__=='__main__':
     elif TYPE == 7:
         # 提取人工分类的结果
         ExtractClassifiedImgs(args.cls_scores, input, output)
+
+    elif TYPE == 8:
+        # 按照指定的大小，生成指定的标注文件夹
+        num = args.num
+        if num == 1:
+            num = 20
+
+        target_task(input, output, num)
 
     else:
         raise Exception('Input Error!!', TYPE)
