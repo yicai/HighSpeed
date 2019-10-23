@@ -6,7 +6,6 @@ import sys
 import argparse
 import shutil
 import stat
-#import cv2
 
 from ClsThresholdProc import Proc
 
@@ -326,6 +325,7 @@ if __name__=='__main__':
                             '2 -- compare two model`s result;\n' ,
                        required=True)
     args = parse.parse_args()
+
 
     #refresh the dir
     output = args.output_dir
