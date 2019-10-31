@@ -40,6 +40,33 @@ def GetAllImgs(input, output, OnlyBiggerImg = True):
 
     print('finish!!\nCopy Raw images:%d\n' % img_cnt)
 
+
+# 从原始文件夹中，把各个散落文件夹中的图片归总到一个文件夹中去,并对文件进行重命名，按照片顺序命名
+def GetAllImgsRename(input, output):
+    if not os.path.exists(input):
+        print('input path:%s in not exit!!\n' % input)
+        sys.exit(1)
+    if not os.path.exists(output):
+        os.makedirs(output)
+
+    img_cnt = 0
+    names = {}
+    for folder in os.walk(input):
+        for file in folder[2]:
+            file_path = os.path.join(folder[0], file)
+            if file_path.endswith('.jpg'):
+                dest_img = os.path.join(output, str(img_cnt), str('.jpg'))
+                shutil.copy(file_path, dest_img)
+                names[str(img_cnt)] = file
+                img_cnt += 1
+
+    with open(os.path.join(output, 'names.txt'), 'w') as f:
+        for k, v in names.items():
+            f.write(k + v + '\n')
+    f.close()
+
+    print('finish!!\nCopy Raw images:%d\n' % img_cnt)
+
 def IsBiggestImg(img_name):
     img = cv2.imread(img_name)
     w, h, _ = img.shape
@@ -343,7 +370,8 @@ if __name__=='__main__':
 
     elif TYPE == 3:
         #从原始文件夹中，把各个散落文件夹中的图片归总到一个文件夹中去
-        GetAllImgs(input, output)
+        flag = False
+        GetAllImgs(input, output, OnlyBiggerImg=flag)
 
     elif TYPE == 4:
         # 根据阈值，把各类的图像进行分类
@@ -375,7 +403,9 @@ if __name__=='__main__':
         if num == 1:
             num = 20
         target_task(input, output, num)
-
+    elif TYPE == 9:
+        # 从原始文件夹中，把各个散落文件夹中的图片归总到一个文件夹中去,并对文件进行重命名，按照片顺序命名
+        GetAllImgsRename(input, output)
     else:
         raise Exception('Input Error!!', TYPE)
 
