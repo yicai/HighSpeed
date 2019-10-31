@@ -55,14 +55,14 @@ def GetAllImgsRename(input, output):
         for file in folder[2]:
             file_path = os.path.join(folder[0], file)
             if file_path.endswith('.jpg'):
-                dest_img = os.path.join(output, str(img_cnt), str('.jpg'))
+                dest_img = os.path.join(output, str(img_cnt) + '.jpg')
                 shutil.copy(file_path, dest_img)
                 names[str(img_cnt)] = file
                 img_cnt += 1
 
     with open(os.path.join(output, 'names.txt'), 'w') as f:
         for k, v in names.items():
-            f.write(k + v + '\n')
+            f.write(k + '\t' + v + '\n')
     f.close()
 
     print('finish!!\nCopy Raw images:%d\n' % img_cnt)

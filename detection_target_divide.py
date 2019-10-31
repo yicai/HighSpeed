@@ -19,7 +19,7 @@ def target_task(s_path, d_path, step):
         dicts["types"] = []
         i_li = img_list[i * step:(i + 1) * step]
         if not os.path.exists(os.path.join(d_path, str(i + 1))):
-            os.mkdir(os.path.join(d_path, str(i + 1)))
+            os.makedirs(os.path.join(d_path, str(i + 1)))
         for j in i_li:
             shutil.copyfile(os.path.join(s_path, j), os.path.join(os.path.join(d_path, str(i + 1)), j))
             dicts["imgs"][j] = {}
