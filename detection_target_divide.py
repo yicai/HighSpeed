@@ -8,7 +8,7 @@ def target_task(s_path, d_path, step):
     img_lists = os.listdir(s_path)
     img_list = []
     for img in img_lists:
-        if img.endswith("jpg"):
+        if img.endswith("jpg") or img.endswith("jpeg"):
             img_list.append(img)
     step = int(step)
     s = len(img_list) // step
