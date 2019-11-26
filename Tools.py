@@ -337,7 +337,7 @@ def SeperateImgsToDirs(src_path, dest_path, bag_sizes=2000, subdir_no=100):
 
 # 从scr中提取不在input中的图片，并输出到dest中去
 def ExtractFile(src, input, dest):
-    exists = {}
+    exists = dict()
     if not os.path.exists(dest):
         os.makedirs(dest)
 
@@ -352,7 +352,7 @@ def ExtractFile(src, input, dest):
 
             file_path = os.path.join(folder[0], file)
 
-            if exists.has_key(file):
+            if exists.get(file, 0) != 1:
                 continue
             else:
                 shutil.copy(file_path, dest)
@@ -434,7 +434,7 @@ if __name__=='__main__':
         GetAllImgsRename(input, output)
     elif TYPE == 10:
         # 从scr中提取不在input中的图片，并输出到dest中去
-        ExtractFile(input, args.tmp, output)
+        ExtractFile(input, args.temp_dir, output)
     else:
         raise Exception('Input Error!!', TYPE)
 
