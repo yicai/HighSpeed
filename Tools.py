@@ -334,6 +334,30 @@ def SeperateImgsToDirs(src_path, dest_path, bag_sizes=2000, subdir_no=100):
 
     print('finished! created sub_dirs:%d' % dir_no)
 
+
+# 从scr中提取不在input中的图片，并输出到dest中去
+def ExtractFile(src, input, dest):
+    exists = {}
+    if not os.path.exists(dest):
+        os.makedirs(dest)
+
+    for img in os.listdir(input):
+        if img.endswith('.jpg'):
+            exists[img] = 1
+
+    for folder in os.walk(src):
+        for file in folder[2]:
+            if not file.endswith('.jpg'):
+                continue
+
+            file_path = os.path.join(folder[0], file)
+
+            if exists.has_key(file):
+                continue
+            else:
+                shutil.copy(file_path, dest)
+
+
 if __name__=='__main__':
 
     parse = argparse.ArgumentParser(description="Calculate the sub-class`s score threshold module!")
@@ -352,6 +376,8 @@ if __name__=='__main__':
                             '1 -- merge classify result into detect result;\n' \
                             '2 -- compare two model`s result;\n' ,
                        required=True)
+    parse.add_argument('-tmp', '--temp_dir', type=str, default='',
+                       help='the undefined temp dir', required=False)
     args = parse.parse_args()
 
 
@@ -406,6 +432,9 @@ if __name__=='__main__':
     elif TYPE == 9:
         # 从原始文件夹中，把各个散落文件夹中的图片归总到一个文件夹中去,并对文件进行重命名，按照片顺序命名
         GetAllImgsRename(input, output)
+    elif TYPE == 10:
+        # 从scr中提取不在input中的图片，并输出到dest中去
+        ExtractFile(input, args.tmp, output)
     else:
         raise Exception('Input Error!!', TYPE)
 
