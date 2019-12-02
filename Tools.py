@@ -262,6 +262,10 @@ def DeleteDir(path):
     else:
         print('path:%s is not exit!' % path)
 
+def ReBuildDir(path):
+    DeleteDir(path)
+    os.makedirs(path)
+
 # 获取web分类工具分类图像
 def ExtractClassifiedImgs(cls_log, src_imgs, dest_path):
     if not os.path.isfile(cls_log):
@@ -337,14 +341,19 @@ def SeperateImgsToDirs(src_path, dest_path, bag_sizes=2000, subdir_no=100):
 
 # 从scr中提取不在input中的图片，并输出到dest中去
 def ExtractFile(src, input, dest):
-    exists = {}
-    if not os.path.exists(dest):
-        os.makedirs(dest)
+    ReBuildDir(dest)
 
+    if not os.path.exists(input):
+        raise Exception('Input path not exist!!', input)
+
+    exists = dict()
     for img in os.listdir(input):
         if img.endswith('.jpg'):
             exists[img] = 1
 
+    print("ExtractFile: Get %d exist-imgs!" % len(exists))
+
+    counter = 0
     for folder in os.walk(src):
         for file in folder[2]:
             if not file.endswith('.jpg'):
@@ -352,18 +361,74 @@ def ExtractFile(src, input, dest):
 
             file_path = os.path.join(folder[0], file)
 
-            if exists.has_key(file):
+            if exists.get(file, 0) == 1:
                 continue
             else:
                 shutil.copy(file_path, dest)
+                counter += 1
 
+    print("ExtractFile Finished, Extract %d images to: %s" % (counter, dest))
+
+# 从scr中提取在sub中同名的图片，并输出到dest中去
+def ExtractSomeFile(input, sub, output):
+    ReBuildDir(output)
+
+    if not os.path.exists(input):
+        raise Exception('Input path not exist!!', input)
+
+    if not os.path.exists(sub):
+        raise Exception('Input path not exist!!', sub)
+
+    exists = dict()
+    for img in os.listdir(sub):
+        if img.endswith('.jpg'):
+            exists[img] = 1
+    print("ExtractFile: Get %d exist-imgs!" % len(exists))
+
+    counter = 0
+    for folder in os.walk(input):
+        for file in folder[2]:
+            if not file.endswith('.jpg'):
+                continue
+
+            file_path = os.path.join(folder[0], file)
+            if exists.get(file, 0) == 1:
+                shutil.copy(file_path, output)
+                counter += 1
+
+    print("ExtractFile Finished, Extract %d images to: %s" % (counter, output))
+
+# 把input文件夹中所有图片的名字全部记录下来，并输出到指定的dest中去
+def ExtractFileNames(input, output='', IsAddPathName=True):
+    if not os.path.exists(input):
+        raise Exception('Input path not exist!!', input)
+
+    if output == '':
+        dest_file = os.path.join(input, 'AllFileNames.txt')
+    else:
+        if not os.path.exists(output):
+            os.makedirs(output)
+        dest_file = os.path.join(output, 'AllFileNames.txt')
+
+    with open(dest_file, 'w') as f:
+        for folder in os.walk(input):
+            for file in folder[2]:
+                if not file.endswith('.jpg'):
+                    continue
+
+                if IsAddPathName :
+                    file_name = os.path.join(folder[0], file)
+                else:
+                    file_name = file
+                f.write(file_name + '\n')
+    f.close()
 
 if __name__=='__main__':
 
     parse = argparse.ArgumentParser(description="Calculate the sub-class`s score threshold module!")
-    parse.add_argument('-o', '--output_dir', type=str, default='/data2/highspeed/process', #RawImgs',
+    parse.add_argument('-o', '--output_dir', type=str, default='', #RawImgs',
                        help='Input the classification result file name with path', required=False)
-    parse.add_argument('-i', '--input_dir', type=str, default='/data2/highspeed/cls_pre',
+    parse.add_argument('-i', '--input_dir', type=str, default='',
                        help='The Dir of the sub-class to be calculated', required=False)
     parse.add_argument('-s', '--cls_scores', type=str, default='/data2/highspeed/cls_result.log',
                        help='input the classify result scores file path', required=False)
@@ -434,7 +499,13 @@ if __name__=='__main__':
         GetAllImgsRename(input, output)
     elif TYPE == 10:
         # 从scr中提取不在input中的图片，并输出到dest中去
-        ExtractFile(input, args.tmp, output)
+        ExtractFile(input, args.temp_dir, output)
+    elif TYPE == 11:
+        # 从scr中提取在sub中同名的图片，并输出到dest中去
+        ExtractSomeFile(input, args.temp_dir, output)
+    elif TYPE == 12:
+        # 把input文件夹中所有图片的名字全部记录下来，并输出到指定的dest中去
+        ExtractFileNames(input, output, IsAddPathName=False)
     else:
         raise Exception('Input Error!!', TYPE)
 
